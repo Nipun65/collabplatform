@@ -21,7 +21,6 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ session }) => {
         className="text-center hover:bg-slate-200 w-full transition ease-in-out cursor-pointer duration-150 px-4 py-1"
         onClick={() => {
           signOut().then((result) => {
-            console.log(result);
             router.push("/login");
           });
         }}

@@ -1,7 +1,7 @@
 import insta from "@/public/insta.svg";
 import facebook from "@/public/facebook.svg";
 import twitter from "@/public/twitter.svg";
-import tiktok from "@/public/tiktok.svg";
+import linkedin from "@/public/linkedin.svg";
 import gmail from "@/public/gmail.svg";
 
 const HEADERTABS = [
@@ -29,8 +29,8 @@ const SOCIALLINKS = [
     logo: twitter,
   },
   {
-    social: "tiktok",
-    logo: tiktok,
+    social: "linkedin",
+    logo: linkedin,
   },
   {
     social: "gmail",

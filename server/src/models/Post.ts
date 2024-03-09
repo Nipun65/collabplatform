@@ -7,12 +7,13 @@ const Post = new Schema({
   mobileNumber: { type: Number, required: false },
   email: { type: String, required: true },
   headline: { type: String, required: true },
+  description: { type: String, required: false },
   work: { type: Array<string>, required: true },
   socialLinks: [
     {
       insta: { type: String, required: false },
       facebook: { type: String, required: false },
-      tiktok: { type: String, required: false },
+      linkedin: { type: String, required: false },
       twitter: { type: String, required: false },
       gmail: { type: String, required: false },
     },

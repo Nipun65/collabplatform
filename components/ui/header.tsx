@@ -16,7 +16,7 @@ import { usePathname } from "next/navigation";
 
 const Header = () => {
   const { data: session, status } = useSession();
-  console.log(session);
+
   const [showMenu, setShowMenu] = useState(false);
   const path = usePathname();
   console.log(path);

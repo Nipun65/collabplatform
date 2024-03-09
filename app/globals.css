@@ -70,6 +70,14 @@
   animation: show-form 100ms ease-in-out;
 }
 
+.login-bg {
+  background: radial-gradient(
+    circle at center center,
+    rgb(71, 71, 71),
+    rgb(8, 8, 8)
+  );
+}
+
 @keyframes show-form {
   0% {
     opacity: 0%;

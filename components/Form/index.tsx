@@ -1,7 +1,7 @@
 "use client";
 import plus from "@/public/plus.svg";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -15,8 +15,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useAddYourPostMutation } from "@/redux/api";
+import { useAddYourPostMutation, useUpdatePostMutation } from "@/redux/api";
 import { useSession } from "next-auth/react";
+import { formValue, setFormData } from "@/redux/PostSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -25,60 +27,77 @@ const formSchema = z.object({
   headline: z.string().min(2, {
     message: "Headline must be at least 2 characters.",
   }),
-  description: z.string().min(2, {
-    message: "description must be at least 10 characters.",
-  }),
+  description: z.string()?.optional(),
   email: z.string().email({ message: "Please Enter Valid Email" }),
-  photo: z.custom<File>(),
+  photo: z.custom<File>() as any,
   socialLinks: z.object({
     insta: z.string().url({ message: "Please Enter Valid URL" }).optional(),
     facebook: z.string().url({ message: "Please Enter Valid URL" }).optional(),
     twitter: z.string().url({ message: "Please Enter Valid URL" }).optional(),
-    tiktok: z.string().url({ message: "Please Enter Valid URL" }).optional(),
+    linkedin: z.string().url({ message: "Please Enter Valid URL" }).optional(),
   }),
 });
 
 const FormWrapper = () => {
-  const [showForm, SetShowForm] = useState(false);
+  const formData: any = useAppSelector(formValue);
+  const dispatch = useAppDispatch();
+
   const [addYourPost, { isLoading, isSuccess, isError, error }] =
     useAddYourPostMutation();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      headline: "",
-      description: "",
-      photo: "" as any,
-      email: "",
+      name: formData?.data?.name || "",
+      headline: formData?.data?.headline || "",
+      description: formData?.data?.description || "",
+      photo: formData?.data?.photo || ("" as any),
+      email: formData?.data?.email || "",
       socialLinks: {
-        tiktok: "",
-        facebook: "",
-        insta: "",
-        twitter: "",
+        linkedin: formData?.data?.socialLinks?.linkedin || "",
+        facebook: formData?.data?.socialLinks?.facebook || "",
+        insta: formData?.data?.socialLinks?.insta || "",
+        twitter: formData?.data?.socialLinks?.twitter || "",
       },
     },
   });
+  useEffect(() => {
+    form.setValue("name", formData?.data?.name);
+    form.setValue("headline", formData?.data?.headline);
+    form.setValue("description", formData?.data?.description);
+    form.setValue("email", formData?.data?.email);
+    form.setValue("socialLinks", formData?.data?.socialLinks?.[0]);
+  }, [formData]);
 
   const { data: session, status } = useSession();
 
+  const [updatePost, { error: updatePostError }] = useUpdatePostMutation();
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const result = await addYourPost({
-      ...values,
-      loggedInEmail: session?.user?.email,
-    });
-    console.log(result);
+    let result;
+    if (formData?.data?._id) {
+      result = updatePost({
+        ...formData?.data,
+        ...values,
+      });
+    } else {
+      result = await addYourPost({
+        ...values,
+        loggedInEmail: session?.user?.email,
+      });
+    }
+
     if (result) {
-      SetShowForm(false);
+      dispatch(setFormData({ data: {}, showModal: false }));
     }
   }
 
   return (
     <>
-      {showForm && (
+      {formData?.showModal && (
         <Form {...form}>
           <div className="z-50 bg-white h-[80%] w-[70%] m-auto shadow-lg rounded-md form-transition space-y-8 inset-0 absolute overflow-auto">
-            <h3 className="text-xl font-bold p-3 h-[10%]">Your Post</h3>
+            <h3 className="text-xl font-bold p-3 h-[8%]">Your Post</h3>
             <div className="border" style={{ margin: 0 }} />
             <form
               onSubmit={form.handleSubmit(onSubmit)}
@@ -153,7 +172,6 @@ const FormWrapper = () => {
                             accept="image/png, image/jpeg"
                           />
                         </FormControl>
-
                         <FormMessage />
                       </FormItem>
                     )}
@@ -231,13 +249,13 @@ const FormWrapper = () => {
                   />
                   <FormField
                     control={form.control}
-                    name="socialLinks.tiktok"
+                    name="socialLinks.linkedin"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>TikTok</FormLabel>
+                        <FormLabel>Linkedin</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="https://www.tiktok.com/collab"
+                            placeholder="https://www.linkedin.com/collab"
                             {...field}
                           />
                         </FormControl>
@@ -251,7 +269,10 @@ const FormWrapper = () => {
               <div className="flex w-1/4 gap-3 float-right xs:py-6 lg:py-0 lg:absolute lg:bottom-3 lg:right-3">
                 <Button
                   variant={"secondary"}
-                  onClick={() => SetShowForm(false)}
+                  onClick={() => {
+                    // setShowForm(false);
+                    dispatch(setFormData({ data: {}, showModal: false }));
+                  }}
                   className="w-1/2"
                 >
                   Cancel
@@ -266,20 +287,23 @@ const FormWrapper = () => {
       )}
       <div
         className="z-50 absolute bottom-6 right-14 cursor-pointer"
-        onClick={() => SetShowForm(!showForm)}
+        onClick={() => {
+          dispatch(setFormData({ data: {}, showModal: !formData?.showModal }));
+        }}
       >
         <div className="rounded-full bg-white p-4">
           <Image
             className={`h-8 w-8 transform transition duration-300 ${
-              showForm ? "-rotate-45" : ""
+              formData?.showModal ? "-rotate-45" : ""
             }`}
             src={plus}
             alt="plus icon"
           />
         </div>
       </div>
-      {showForm && (
-        <div className="bg-black opacity-25 z-40 absolute inset-0 w-full h-screen transition" />
+      {formData?.showModal && (
+        // <div className="bg-black opacity-25 z-40 absolute inset-0 w-full h-screen transition" />
+        <div className=" h-screen fixed inset-0 z-40 bg-black/80" />
       )}
     </>
   );
