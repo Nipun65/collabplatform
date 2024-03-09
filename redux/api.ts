@@ -20,7 +20,20 @@ export const collabapi = createApi({
         };
       },
     }),
+    addYourPost: builder.mutation({
+      query: (body: any) => {
+        return {
+          url: `/post`,
+          method: "POST",
+          body,
+        };
+      },
+    }),
   }),
 });
 
-export const { useGetExplorePostQuery, useGetYourPostQuery } = collabapi;
+export const {
+  useGetExplorePostQuery,
+  useGetYourPostQuery,
+  useAddYourPostMutation,
+} = collabapi;

@@ -1,12 +1,13 @@
 import mongoose from "mongoose";
 const { Schema } = mongoose;
 const Post = new Schema({
-  name: { type: String, required: false },
-  role: { type: String, required: false },
+  name: { type: String, required: true },
+  loggedInEmail: { type: String, required: true },
   image: { type: String, required: false },
   mobileNumber: { type: Number, required: false },
-  email: { type: String, required: false },
-  work: { type: Array<string>, required: false },
+  email: { type: String, required: true },
+  headline: { type: String, required: true },
+  work: { type: Array<string>, required: true },
   socialLinks: [
     {
       insta: { type: String, required: false },

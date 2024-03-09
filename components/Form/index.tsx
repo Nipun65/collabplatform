@@ -1,0 +1,288 @@
+"use client";
+import plus from "@/public/plus.svg";
+import Image from "next/image";
+import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useAddYourPostMutation } from "@/redux/api";
+import { useSession } from "next-auth/react";
+
+const formSchema = z.object({
+  name: z.string().min(2, {
+    message: "Name must be at least 2 characters.",
+  }),
+  headline: z.string().min(2, {
+    message: "Headline must be at least 2 characters.",
+  }),
+  description: z.string().min(2, {
+    message: "description must be at least 10 characters.",
+  }),
+  email: z.string().email({ message: "Please Enter Valid Email" }),
+  photo: z.custom<File>(),
+  socialLinks: z.object({
+    insta: z.string().url({ message: "Please Enter Valid URL" }).optional(),
+    facebook: z.string().url({ message: "Please Enter Valid URL" }).optional(),
+    twitter: z.string().url({ message: "Please Enter Valid URL" }).optional(),
+    tiktok: z.string().url({ message: "Please Enter Valid URL" }).optional(),
+  }),
+});
+
+const FormWrapper = () => {
+  const [showForm, SetShowForm] = useState(false);
+  const [addYourPost, { isLoading, isSuccess, isError, error }] =
+    useAddYourPostMutation();
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      headline: "",
+      description: "",
+      photo: "" as any,
+      email: "",
+      socialLinks: {
+        tiktok: "",
+        facebook: "",
+        insta: "",
+        twitter: "",
+      },
+    },
+  });
+
+  const { data: session, status } = useSession();
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const result = await addYourPost({
+      ...values,
+      loggedInEmail: session?.user?.email,
+    });
+    console.log(result);
+    if (result) {
+      SetShowForm(false);
+    }
+  }
+
+  return (
+    <>
+      {showForm && (
+        <Form {...form}>
+          <div className="z-50 bg-white h-[80%] w-[70%] m-auto shadow-lg rounded-md form-transition space-y-8 inset-0 absolute overflow-auto">
+            <h3 className="text-xl font-bold p-3 h-[10%]">Your Post</h3>
+            <div className="border" style={{ margin: 0 }} />
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="p-3 h-[88%]"
+              style={{ margin: 0 }}
+            >
+              <div className="flex xs:flex-col lg:flex-row gap-6 lg:col-span-2 xs:col-span-1">
+                <div className="xs:w-full lg:w-1/2 flex flex-col gap-2">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Name</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter Name"
+                            {...field}
+                            className="mt-0"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="headline"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Headline</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter Headline"
+                            {...field}
+                            className="mt-0"
+                          />
+                        </FormControl>
+
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Description</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter Description"
+                            {...field}
+                            className="mt-0"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="photo"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Photo</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            type="file"
+                            accept="image/png, image/jpeg"
+                          />
+                        </FormControl>
+
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter Your Email" {...field} />
+                        </FormControl>
+
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className="border" />
+                <div className="xs:w-full lg:w-1/2 flex flex-col gap-2">
+                  <p className="font-semibold text-lg">Social Links</p>
+                  <FormField
+                    control={form.control}
+                    name="socialLinks.insta"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Instagram</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="https://www.instagram.com/collab"
+                            {...field}
+                            className="mt-0"
+                          />
+                        </FormControl>
+
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="socialLinks.facebook"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Facebook</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="https://www.facebook.com/collab"
+                            {...field}
+                          />
+                        </FormControl>
+
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="socialLinks.twitter"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Twitter</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="https://www.twitter.com/collab"
+                            {...field}
+                          />
+                        </FormControl>
+
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="socialLinks.tiktok"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>TikTok</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="https://www.tiktok.com/collab"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+
+              <div className="flex w-1/4 gap-3 float-right xs:py-6 lg:py-0 lg:absolute lg:bottom-3 lg:right-3">
+                <Button
+                  variant={"secondary"}
+                  onClick={() => SetShowForm(false)}
+                  className="w-1/2"
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" className="w-1/2">
+                  Submit
+                </Button>
+              </div>
+            </form>
+          </div>
+        </Form>
+      )}
+      <div
+        className="z-50 absolute bottom-6 right-14 cursor-pointer"
+        onClick={() => SetShowForm(!showForm)}
+      >
+        <div className="rounded-full bg-white p-4">
+          <Image
+            className={`h-8 w-8 transform transition duration-300 ${
+              showForm ? "-rotate-45" : ""
+            }`}
+            src={plus}
+            alt="plus icon"
+          />
+        </div>
+      </div>
+      {showForm && (
+        <div className="bg-black opacity-25 z-40 absolute inset-0 w-full h-screen transition" />
+      )}
+    </>
+  );
+};
+
+export default FormWrapper;

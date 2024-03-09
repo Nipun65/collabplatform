@@ -7,9 +7,9 @@ const addPost = (req, res, next) => {
     profile: postData?.image,
     mobileNumber: postData?.mobileNumber,
     email: postData?.email,
-    work: postData?.work,
+    headline: postData?.headline,
+    loggedInEmail: postData?.loggedInEmail,
     socialLinks: postData?.socialLinks,
-    role: postData?.role,
     name: postData?.name,
   });
   post.save().then((result) => {
@@ -24,7 +24,7 @@ const getPost = async (req, res, next) => {
 const getYourPost = async (req, res, next) => {
   console.log(req?.query);
   const email = req?.query?.email;
-  const data = await PostModel.find({ email });
+  const data = await PostModel.find({ loggedInEmail: email });
   res.json(data);
 };
 export { addPost, getPost, getYourPost };
