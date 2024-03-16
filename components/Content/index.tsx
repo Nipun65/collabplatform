@@ -81,9 +81,11 @@ const Content = () => {
             data?.map((explore: any) => (
               <Card className="w-fit items-center flex flex-col h-fit">
                 <Image
-                  src={nextjs}
+                  src={explore?.image?.url || nextjs}
                   alt="brand logo"
                   className="fit-content h-64 w-64 object-fit"
+                  width={256}
+                  height={256}
                 />
                 <div className="border w-full" />
                 <div className="">

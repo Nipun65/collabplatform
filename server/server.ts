@@ -5,9 +5,10 @@ import router from "./src/routes/Post";
 import cors from "cors";
 
 const app = express();
-app.use(express.json());
+app.use(express.json({ limit: "50mb" }));
 app.use(cors({}));
 dotenv.config({ path: "../.env" });
+
 const PORT = process.env.BACKEND_PORT;
 const MONOGO_URI = process.env.mongo_uri;
 

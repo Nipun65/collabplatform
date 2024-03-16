@@ -3,7 +3,7 @@ const { Schema } = mongoose;
 const Post = new Schema({
   name: { type: String, required: true },
   loggedInEmail: { type: String, required: true },
-  image: { type: String, required: false },
+  image: { type: Object, required: true },
   mobileNumber: { type: Number, required: false },
   email: { type: String, required: true },
   headline: { type: String, required: true },

@@ -1,7 +1,7 @@
 "use client";
 import plus from "@/public/plus.svg";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -19,6 +19,7 @@ import { useAddYourPostMutation, useUpdatePostMutation } from "@/redux/api";
 import { useSession } from "next-auth/react";
 import { formValue, setFormData } from "@/redux/PostSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import upload from "@/public/upload.svg";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -29,7 +30,10 @@ const formSchema = z.object({
   }),
   description: z.string()?.optional(),
   email: z.string().email({ message: "Please Enter Valid Email" }),
-  photo: z.custom<File>() as any,
+  photo: z.object({
+    data: z.string() as any,
+    name: z.string(),
+  }),
   socialLinks: z.object({
     insta: z.string().url({ message: "Please Enter Valid URL" }).optional(),
     facebook: z.string().url({ message: "Please Enter Valid URL" }).optional(),
@@ -66,6 +70,7 @@ const FormWrapper = () => {
     form.setValue("headline", formData?.data?.headline);
     form.setValue("description", formData?.data?.description);
     form.setValue("email", formData?.data?.email);
+    form.setValue("photo", { data: "", name: formData?.data?.image?.name });
     form.setValue("socialLinks", formData?.data?.socialLinks?.[0]);
   }, [formData]);
 
@@ -91,6 +96,23 @@ const FormWrapper = () => {
       dispatch(setFormData({ data: {}, showModal: false }));
     }
   }
+
+  const handleImageChange = (e: React.ChangeEvent) => {
+    const eTarget = e?.target as HTMLInputElement;
+
+    if (eTarget.files) {
+      const file = eTarget.files[0];
+      previewFile(file);
+    }
+  };
+
+  const previewFile = (file: File) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = () => {
+      form.setValue("photo", { data: reader.result, name: file?.name });
+    };
+  };
 
   return (
     <>
@@ -162,15 +184,32 @@ const FormWrapper = () => {
                   <FormField
                     control={form.control}
                     name="photo"
-                    render={({ field }) => (
+                    render={({ field: { onChange, value, ...rest } }) => (
                       <FormItem>
                         <FormLabel>Photo</FormLabel>
                         <FormControl>
-                          <Input
-                            {...field}
-                            type="file"
-                            accept="image/png, image/jpeg"
-                          />
+                          <div>
+                            <Input
+                              {...rest}
+                              type="file"
+                              name="photo"
+                              onChange={handleImageChange}
+                              accept="image/*"
+                              id="inputFile"
+                              className="hidden"
+                            />
+                            <label
+                              htmlFor="inputFile"
+                              className="border px-3 py-2 flex items-center gap-2"
+                            >
+                              <Image
+                                src={upload}
+                                alt="upload img"
+                                className="h-5 w-5"
+                              />
+                              {value?.name || "Click me to upload image"}
+                            </label>
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
