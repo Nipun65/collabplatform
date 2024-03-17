@@ -49,22 +49,39 @@ const deletePost = async (req, res, next) => {
 const updatePost = async (req, res, next) => {
   const body = req?.body;
   const id = req?.body?._id;
-
-  const imgId = body?.image?.public_id;
+  let imgId: string;
   const image = body?.photo?.data;
-  if (imgId) {
-    await cloudinary.uploader.destroy(imgId);
+  if (image.length > 0) {
+    imgId = body?.image?.public_id;
   }
-  const newImg = await cloudinary.uploader.upload(image, {
-    upload_preset: "collab_img",
-  });
-  body.image = {
-    url: newImg?.secure_url,
-    name: body?.photo?.name,
-    public_id: newImg?.public_id,
-  };
 
-  await PostModel.findOneAndUpdate({ _id: id }, body);
-  res.status(200).send("Succeffuly Updated");
+  let newImg: any = {};
+  if (imgId) {
+    try {
+      await cloudinary.uploader.destroy(imgId);
+      try {
+        newImg = await cloudinary.uploader.upload(image, {
+          upload_preset: "collab_img",
+        });
+        body.image = {
+          url: newImg?.secure_url,
+          name: body?.photo?.name,
+          public_id: newImg?.public_id,
+        };
+      } catch (err) {
+        console.log(err);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  try {
+    await PostModel.findOneAndUpdate({ _id: id }, body);
+    res.status(200).send("Succeffuly Updated");
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Error occurred while updating post");
+  }
 };
 export { addPost, getPost, getYourPost, deletePost, updatePost };
