@@ -3,14 +3,15 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import router from "./src/routes/Post";
 import cors from "cors";
+import path from "path";
 
 const app = express();
 app.use(express.json({ limit: "50mb" }));
 app.use(cors({}));
-dotenv.config({ path: "../.env" });
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 const PORT = process.env.BACKEND_PORT;
-const MONOGO_URI = process.env.mongo_uri;
+const MONOGO_URI = process.env.MONGO_URI;
 
 mongoose
   .connect(MONOGO_URI!)

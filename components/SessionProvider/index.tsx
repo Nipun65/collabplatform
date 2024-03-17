@@ -21,7 +21,7 @@ const SessionProvider: React.FC<SessionProviderProps> = ({
 
   useEffect(() => {
     if (!session) router.push("/login");
-    else router.push(path ? path : "/explore");
+    else router.push(path === "/your-posts" ? path : "/explore");
   }, [session, router]);
 
   return (

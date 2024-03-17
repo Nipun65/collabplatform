@@ -65,6 +65,7 @@ const FormWrapper = () => {
       },
     },
   });
+
   useEffect(() => {
     form.setValue("name", formData?.data?.name);
     form.setValue("headline", formData?.data?.headline);
@@ -305,18 +306,36 @@ const FormWrapper = () => {
                 </div>
               </div>
 
-              <div className="flex w-1/4 gap-3 float-right xs:py-6 lg:py-0 lg:absolute lg:bottom-3 lg:right-3">
+              <div className="flex w-1/4 gap-3 float-right xs:mr-3 xs:py-6 lg:py-0 lg:absolute lg:bottom-3 lg:right-3">
                 <Button
                   variant={"secondary"}
                   onClick={() => {
-                    // setShowForm(false);
-                    dispatch(setFormData({ data: {}, showModal: false }));
+                    if (formData?.action === "edit") {
+                      dispatch(
+                        setFormData({
+                          data: {},
+                          showModal: !formData?.showModal,
+                          action: "",
+                        })
+                      );
+                    } else {
+                      dispatch(
+                        setFormData({
+                          data: form.getValues(),
+                          showModal: !formData?.showModal,
+                          action: "",
+                        })
+                      );
+                    }
                   }}
-                  className="w-1/2"
+                  className="w-1/2 xs:text-[0.5rem] md:text-base"
                 >
                   Cancel
                 </Button>
-                <Button type="submit" className="w-1/2">
+                <Button
+                  type="submit"
+                  className="w-1/2 xs:text-[0.5rem] md:text-base"
+                >
                   Submit
                 </Button>
               </div>
@@ -327,12 +346,29 @@ const FormWrapper = () => {
       <div
         className="z-50 absolute bottom-6 right-14 cursor-pointer"
         onClick={() => {
-          dispatch(setFormData({ data: {}, showModal: !formData?.showModal }));
+          console.log(formData);
+          if (formData?.action === "edit") {
+            dispatch(
+              setFormData({
+                data: {},
+                showModal: !formData?.showModal,
+                action: "",
+              })
+            );
+          } else {
+            dispatch(
+              setFormData({
+                data: form.getValues(),
+                showModal: !formData?.showModal,
+                action: "",
+              })
+            );
+          }
         }}
       >
-        <div className="rounded-full bg-white p-4">
+        <div className="rounded-full bg-white xs:p-3 lg:p-4">
           <Image
-            className={`h-8 w-8 transform transition duration-300 ${
+            className={`xs:h-4 xs:w-4 md:h-6 md:w-6 lg:h-8 lg:w-8 transform transition duration-300 ${
               formData?.showModal ? "-rotate-45" : ""
             }`}
             src={plus}
@@ -341,7 +377,6 @@ const FormWrapper = () => {
         </div>
       </div>
       {formData?.showModal && (
-        // <div className="bg-black opacity-25 z-40 absolute inset-0 w-full h-screen transition" />
         <div className=" h-screen fixed inset-0 z-40 bg-black/80" />
       )}
     </>

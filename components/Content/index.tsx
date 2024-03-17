@@ -66,7 +66,7 @@ const Content = () => {
   const [activeIndex, setActiveIndex] = useState(null);
   const handleOption = async (action: string, explore: any) => {
     if (action === "edit") {
-      dispatch(setFormData({ data: explore, showModal: true }));
+      dispatch(setFormData({ data: explore, showModal: true, action: "edit" }));
     } else if (action === "delete") {
       setShowAlert(true);
       setActiveIndex(explore?._id);
@@ -83,12 +83,12 @@ const Content = () => {
                 <Image
                   src={explore?.image?.url || nextjs}
                   alt="brand logo"
-                  className="fit-content h-64 w-64 object-fit"
-                  width={256}
-                  height={256}
+                  className="fit-content h-72 w-72 object-fit rounded-t-lg"
+                  width={300}
+                  height={300}
                 />
                 <div className="border w-full" />
-                <div className="">
+                <div className="w-full">
                   <CardHeader
                     className="flex justify-between"
                     style={{ flexDirection: "row", alignItems: "start" }}
@@ -133,28 +133,27 @@ const Content = () => {
                       {SOCIALLINKS.map(
                         (value: { logo: any; social: string }) => {
                           return (
-                            <li className="border rounded-full p-1.5">
-                              <Link
-                                href={
-                                  (value.social === "gmail"
-                                    ? `mailto:${
-                                        explore?.socialLinks?.[0]?.[
+                            (explore?.socialLinks?.[0]?.[value.social] ||
+                              (value.social === "gmail" && explore?.email)) && (
+                              <li className="border rounded-full p-1.5">
+                                <Link
+                                  href={
+                                    (value.social === "gmail"
+                                      ? `mailto:${explore?.email}`
+                                      : explore?.socialLinks?.[0]?.[
                                           value.social
-                                        ]
-                                      }`
-                                    : explore?.socialLinks?.[0]?.[
-                                        value.social
-                                      ]) || ""
-                                }
-                                target="__blank"
-                              >
-                                <Image
-                                  className="h-5 w-5 table-cell align-middle"
-                                  src={value.logo}
-                                  alt="social link"
-                                />
-                              </Link>
-                            </li>
+                                        ]) || ""
+                                  }
+                                  target="__blank"
+                                >
+                                  <Image
+                                    className="h-5 w-5 table-cell align-middle"
+                                    src={value.logo}
+                                    alt="social link"
+                                  />
+                                </Link>
+                              </li>
+                            )
                           );
                         }
                       )}

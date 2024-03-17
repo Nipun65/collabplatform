@@ -2,12 +2,16 @@ import { createSlice, current } from "@reduxjs/toolkit";
 
 const formData = createSlice({
   name: "form data",
-  initialState: { data: {}, showModal: false },
+  initialState: { data: {}, showModal: false, action: "" },
   reducers: {
     setFormData(state, action) {
       const payload = action.payload;
 
-      state = { data: payload.data, showModal: payload.showModal };
+      state = {
+        data: payload.data,
+        showModal: payload.showModal,
+        action: payload?.action,
+      };
       return state;
     },
   },
