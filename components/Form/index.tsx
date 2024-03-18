@@ -1,7 +1,7 @@
 "use client";
 import plus from "@/public/plus.svg";
 import Image from "next/image";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -20,20 +20,38 @@ import { useSession } from "next-auth/react";
 import { formValue, setFormData } from "@/redux/PostSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import upload from "@/public/upload.svg";
+import Loader from "../Loader";
 
 const formSchema = z.object({
-  name: z.string().min(2, {
+  name: z.string().nonempty("This is required").min(2, {
     message: "Name must be at least 2 characters.",
   }),
-  headline: z.string().min(2, {
-    message: "Headline must be at least 2 characters.",
+  headline: z.string().nonempty("This is required").min(2, {
+    message: "Headline must be at least 2 characters",
   }),
-  description: z.string()?.optional(),
+  description: z
+    .string()
+    .nonempty("This is required")
+    .min(10, {
+      message: "Description must be at least 10 charaters",
+    })
+    .max(150, {
+      message: "Description should be less than 150 characters",
+    }),
   email: z.string().email({ message: "Please Enter Valid Email" }),
-  photo: z.object({
-    data: z.string() as any,
-    name: z.string(),
-  }),
+  photo: z
+    .object({
+      data: z.string() as any,
+      name: z.string(),
+    })
+    .refine(
+      (value) => {
+        return value.data.length > 0 || value.name.length > 0;
+      },
+      {
+        message: "This is required",
+      }
+    ),
   socialLinks: z.object({
     insta: z.string().url({ message: "Please Enter Valid URL" }).optional(),
     facebook: z.string().url({ message: "Please Enter Valid URL" }).optional(),
@@ -49,13 +67,17 @@ const FormWrapper = () => {
   const [addYourPost, { isLoading, isSuccess, isError, error }] =
     useAddYourPostMutation();
 
+  const [loading, setLoading] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: formData?.data?.name || "",
       headline: formData?.data?.headline || "",
       description: formData?.data?.description || "",
-      photo: formData?.data?.photo || ("" as any),
+      photo: {
+        data: "",
+        name: "",
+      },
       email: formData?.data?.email || "",
       socialLinks: {
         linkedin: formData?.data?.socialLinks?.linkedin || "",
@@ -67,11 +89,13 @@ const FormWrapper = () => {
   });
 
   useEffect(() => {
-    form.setValue("name", formData?.data?.name);
-    form.setValue("headline", formData?.data?.headline);
-    form.setValue("description", formData?.data?.description);
-    form.setValue("email", formData?.data?.email);
-    form.setValue("photo", { data: "", name: formData?.data?.image?.name });
+    if (formData?.action === "edit") {
+      form.setValue("name", formData?.data?.name);
+      form.setValue("headline", formData?.data?.headline);
+      form.setValue("description", formData?.data?.description);
+      form.setValue("email", formData?.data?.email);
+      form.setValue("photo", { data: "", name: formData?.data?.image?.name });
+    }
     form.setValue("socialLinks", formData?.data?.socialLinks?.[0]);
   }, [formData]);
 
@@ -81,8 +105,9 @@ const FormWrapper = () => {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     let result;
+    setLoading(true);
     if (formData?.data?._id) {
-      result = updatePost({
+      result = await updatePost({
         ...formData?.data,
         ...values,
       });
@@ -95,15 +120,19 @@ const FormWrapper = () => {
 
     if (result) {
       dispatch(setFormData({ data: {}, showModal: false }));
+      form.reset();
+      setLoading(false);
     }
   }
 
   const handleImageChange = (e: React.ChangeEvent) => {
     const eTarget = e?.target as HTMLInputElement;
-
     if (eTarget.files) {
       const file = eTarget.files[0];
       previewFile(file);
+    } else {
+      form.setValue("photo", { data: "", name: "" });
+      form.trigger("photo");
     }
   };
 
@@ -112,7 +141,29 @@ const FormWrapper = () => {
     reader.readAsDataURL(file);
     reader.onloadend = () => {
       form.setValue("photo", { data: reader.result, name: file?.name });
+      form.trigger("photo");
     };
+  };
+
+  const setFormOnClose = (action: string) => {
+    if (action === "edit") {
+      dispatch(
+        setFormData({
+          data: {},
+          showModal: !formData?.showModal,
+          action: "",
+        })
+      );
+      form.reset();
+    } else {
+      dispatch(
+        setFormData({
+          data: form.getValues(),
+          showModal: !formData?.showModal,
+          action: "",
+        })
+      );
+    }
   };
 
   return (
@@ -124,7 +175,7 @@ const FormWrapper = () => {
             <div className="border" style={{ margin: 0 }} />
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className="p-3 h-[88%]"
+              className="p-3 h-[88%] overflow-auto"
               style={{ margin: 0 }}
             >
               <div className="flex xs:flex-col lg:flex-row gap-6 lg:col-span-2 xs:col-span-1">
@@ -168,15 +219,22 @@ const FormWrapper = () => {
                   <FormField
                     control={form.control}
                     name="description"
-                    render={({ field }) => (
+                    render={({ field: { value, ...rest } }) => (
                       <FormItem>
                         <FormLabel>Description</FormLabel>
                         <FormControl>
-                          <Input
-                            placeholder="Enter Description"
-                            {...field}
-                            className="mt-0"
-                          />
+                          <>
+                            <Input
+                              placeholder="Enter Description"
+                              {...rest}
+                              value={value}
+                              className="mt-0"
+                              maxLength={150}
+                            />
+                            <span className="opacity-80 float-right text-xs">
+                              {value.length} / 150
+                            </span>
+                          </>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -306,37 +364,23 @@ const FormWrapper = () => {
                 </div>
               </div>
 
-              <div className="flex w-1/4 gap-3 float-right xs:mr-3 xs:py-6 lg:py-0 lg:absolute lg:bottom-3 lg:right-3">
+              <div className="flex xs:float-right min-w-1/4 w-fit gap-3 xs:pt-6 lg:absolute lg:bottom-3 lg:right-3">
                 <Button
                   variant={"secondary"}
-                  onClick={() => {
-                    if (formData?.action === "edit") {
-                      dispatch(
-                        setFormData({
-                          data: {},
-                          showModal: !formData?.showModal,
-                          action: "",
-                        })
-                      );
-                    } else {
-                      dispatch(
-                        setFormData({
-                          data: form.getValues(),
-                          showModal: !formData?.showModal,
-                          action: "",
-                        })
-                      );
-                    }
-                  }}
-                  className="w-1/2 xs:text-[0.5rem] md:text-base"
+                  onClick={() => setFormOnClose(formData?.action)}
+                  className=" min-w-1/2 w-fit px-6 xs:text-[0.5rem] md:text-base"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
-                  className="w-1/2 xs:text-[0.5rem] md:text-base"
+                  className="min-w-1/2 w-fit px-6 xs:text-[0.5rem] md:text-base flex gap-3"
+                  disabled={loading}
                 >
                   Submit
+                  {loading && (
+                    <Loader className="xs:h-3 xs:w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 text-white" />
+                  )}
                 </Button>
               </div>
             </form>
@@ -345,26 +389,7 @@ const FormWrapper = () => {
       )}
       <div
         className="z-50 absolute bottom-6 right-14 cursor-pointer"
-        onClick={() => {
-          console.log(formData);
-          if (formData?.action === "edit") {
-            dispatch(
-              setFormData({
-                data: {},
-                showModal: !formData?.showModal,
-                action: "",
-              })
-            );
-          } else {
-            dispatch(
-              setFormData({
-                data: form.getValues(),
-                showModal: !formData?.showModal,
-                action: "",
-              })
-            );
-          }
-        }}
+        onClick={() => setFormOnClose(formData?.action)}
       >
         <div className="rounded-full bg-white xs:p-3 lg:p-4">
           <Image
@@ -377,7 +402,7 @@ const FormWrapper = () => {
         </div>
       </div>
       {formData?.showModal && (
-        <div className=" h-screen fixed inset-0 z-40 bg-black/80" />
+        <div className="h-screen fixed inset-0 z-40 bg-black/80" />
       )}
     </>
   );

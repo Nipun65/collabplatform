@@ -12,7 +12,7 @@ const router = express.Router();
 router.post("/post", addPost);
 router.get("/get-explore", getPost);
 router.get("/get-your-post", getYourPost);
-router.post("/delete-post", deletePost);
+router.delete("/delete-post", deletePost);
 router.put("/update-post", updatePost);
 
 export default router;

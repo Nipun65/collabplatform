@@ -78,6 +78,20 @@
   );
 }
 
+::-webkit-scrollbar {
+  width: 8px;
+  background: transparent;
+}
+
+::-webkit-scrollbar-track {
+  border-radius: 1px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 12px;
+  background: #1a1a1a;
+}
+
 @keyframes show-form {
   0% {
     opacity: 0%;

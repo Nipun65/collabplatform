@@ -25,7 +25,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import React, { useState } from "react";
-
 import {
   AlertDialog,
   AlertDialogAction,
@@ -38,6 +37,7 @@ import {
 import dots from "@/public/dots.svg";
 import { setFormData } from "@/redux/PostSlice";
 import { useAppDispatch } from "@/redux/hooks";
+import { Loader } from "lucide-react";
 
 const Content = () => {
   const path = usePathname();
@@ -46,10 +46,12 @@ const Content = () => {
 
   const { data: session, status: sessionStatus } = useSession();
   const [deletePost, { error: deleteError }] = useDeletePostMutation();
+  const [loading, setLoading] = useState(false);
 
   if (path === "/explore") {
-    const { data: exploreData, status: exploreStatus } =
-      useGetExplorePostQuery("");
+    const { data: exploreData, status: exploreStatus } = useGetExplorePostQuery(
+      {}
+    );
     data = exploreData;
     status = exploreStatus;
   } else if (path === "/your-posts") {
@@ -63,13 +65,16 @@ const Content = () => {
   const [showAlert, setShowAlert] = useState(false);
   const dispatch = useAppDispatch();
 
-  const [activeIndex, setActiveIndex] = useState(null);
+  const [activeIndex, setActiveIndex] = useState<any>(null);
   const handleOption = async (action: string, explore: any) => {
     if (action === "edit") {
       dispatch(setFormData({ data: explore, showModal: true, action: "edit" }));
     } else if (action === "delete") {
       setShowAlert(true);
-      setActiveIndex(explore?._id);
+      setActiveIndex({
+        _id: explore?._id,
+        loggedInEmail: explore?.loggedInEmail,
+      });
     }
   };
 
@@ -79,7 +84,7 @@ const Content = () => {
         <div className="p-4 xs:place-items-center xs:grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4 grid">
           {status === "fulfilled" &&
             data?.map((explore: any) => (
-              <Card className="w-fit items-center flex flex-col h-fit">
+              <Card className="max-w-72 items-center flex flex-col h-fit break-all">
                 <Image
                   src={explore?.image?.url || nextjs}
                   alt="brand logo"
@@ -98,8 +103,12 @@ const Content = () => {
                       <CardDescription>
                         {explore?.headline || explore?.role}
                       </CardDescription>
-                      <CardDescription className="mt-2 opacity-80 overflow-auto h-16">
-                        {explore?.description}
+                      <CardDescription
+                        className={`mt-3 opacity-80 overflow-auto h-16 text-wrap`}
+                      >
+                        {explore?.description?.length > 0
+                          ? explore?.description
+                          : "No description"}
                       </CardDescription>
                     </div>
                     {session?.user?.email === explore?.loggedInEmail && (
@@ -174,16 +183,33 @@ const Content = () => {
             Are you sure? you want to delete this post?
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setShowAlert(false)}>
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={async () => {
-                const result = await deletePost({ _id: activeIndex });
+            <AlertDialogCancel
+              disabled={loading}
+              onClick={() => {
                 setShowAlert(false);
               }}
             >
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              disabled={loading}
+              onClick={async () => {
+                setLoading(true);
+                const result = await deletePost({
+                  _id: activeIndex._id,
+                  loggedInEmail: activeIndex.loggedInEmail,
+                });
+                if (result) {
+                  setLoading(false);
+                  setShowAlert(false);
+                }
+              }}
+              className="flex xs:gap-1 lg:gap-3 items-center justify-center"
+            >
               Delete
+              {loading && (
+                <Loader className="xs:h-3 xs:w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 text-white" />
+              )}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

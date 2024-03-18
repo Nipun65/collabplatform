@@ -21,7 +21,10 @@ const Header = () => {
   const path = usePathname();
   return (
     <>
-      <div className="flex items-center bg-white justify-between px-6 py-3 h-[10%]">
+      <div
+        className="flex items-center bg-[#171717]
+       justify-between px-6 py-3 h-[10%]"
+      >
         <NavigationMenu>
           <NavigationMenuList className="flex gap-3">
             {HEADERTABS.map((value: any) => {
@@ -31,8 +34,8 @@ const Header = () => {
                     <NavigationMenuLink
                       className={`${navigationMenuTriggerStyle()} ${
                         value.path === path?.toLocaleLowerCase()
-                          ? "bg-gray-300"
-                          : ""
+                          ? "bg-gray-300 text-black"
+                          : "bg-transparent text-white"
                       }`}
                     >
                       {value.name}
