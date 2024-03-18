@@ -11,7 +11,6 @@ const Wrapper: React.FC<WrapperProps> = ({ children }) => {
       <Header />
       {children}
       <Content />
-
       <FormWrapper />
     </div>
   );

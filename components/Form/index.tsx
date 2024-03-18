@@ -266,7 +266,7 @@ const FormWrapper = () => {
                                 alt="upload img"
                                 className="h-5 w-5"
                               />
-                              {value?.name || "Click me to upload image"}
+                              {value?.name || "Click to upload image"}
                             </label>
                           </div>
                         </FormControl>
