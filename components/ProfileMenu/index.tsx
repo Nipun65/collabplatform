@@ -1,13 +1,18 @@
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { Dispatch, SetStateAction } from "react";
 
 interface ProfileMenuProps {
   session: any;
+  setShowMenu: Dispatch<SetStateAction<boolean>>;
 }
-const ProfileMenu: React.FC<ProfileMenuProps> = ({ session }) => {
+const ProfileMenu: React.FC<ProfileMenuProps> = ({ session, setShowMenu }) => {
   const router = useRouter();
   return (
-    <div className="absolute border top-12 right-1 bg-white shadow rounded-sm">
+    <div
+      className="absolute border top-12 right-1 bg-white shadow rounded-sm"
+      onMouseDown={(e) => e.stopPropagation()}
+    >
       <div className="px-4 py-2">
         <div className="text-sm">
           <p>{session.user?.name}</p>

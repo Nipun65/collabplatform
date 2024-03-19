@@ -47,18 +47,26 @@ const Header = () => {
           </NavigationMenuList>
         </NavigationMenu>
 
-        <Avatar
-          onClick={() => setShowMenu(!showMenu)}
+        <div
           onBlur={() => setShowMenu(false)}
-          className="relative cursor-pointer"
+          tabIndex={0}
+          className="relative"
         >
-          <AvatarImage
-            src={session?.user?.image || undefined}
-            className="h-10 w-10 rounded-full"
-          />
-          {showMenu && <ProfileMenu session={session} />}
-          <AvatarFallback>null</AvatarFallback>
-        </Avatar>
+          <Avatar
+            onClick={() => setShowMenu(!showMenu)}
+            className="cursor-pointer"
+          >
+            <AvatarImage
+              src={session?.user?.image || undefined}
+              className="h-10 w-10 rounded-full"
+            />
+
+            <AvatarFallback>null</AvatarFallback>
+          </Avatar>
+          {showMenu && (
+            <ProfileMenu session={session} setShowMenu={setShowMenu} />
+          )}
+        </div>
       </div>
     </>
   );

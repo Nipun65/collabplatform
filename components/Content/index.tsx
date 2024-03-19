@@ -37,7 +37,7 @@ import {
 import dots from "@/public/dots.svg";
 import { setFormData } from "@/redux/PostSlice";
 import { useAppDispatch } from "@/redux/hooks";
-import { Loader } from "lucide-react";
+import Loader from "@/components/Loader";
 
 const Content = () => {
   const path = usePathname();
@@ -328,6 +328,12 @@ const Content = () => {
       )}
       {data?.length === 0 && (
         <p className="text-4xl text-white text-center">No Post Found</p>
+      )}
+
+      {!data && (
+        <div className="flex justify-center items-center h-full relative">
+          <Loader className="h-16 w-16 text-white z-50" />
+        </div>
       )}
       <AlertDialog open={showAlert}>
         <AlertDialogContent>
