@@ -31,7 +31,7 @@ const LoginComp: React.FC<LoginCompProps> = ({ status, className }) => {
         ) : (
           <Loader className="h-7 w-7" />
         )}
-        Sign in with Goolge
+        Sign in with Google
       </Button>
     </div>
   );
