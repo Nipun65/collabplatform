@@ -170,7 +170,7 @@ const FormWrapper = () => {
     <>
       {formData?.showModal && (
         <Form {...form}>
-          <div className="z-50 bg-white h-[80%] w-[70%] m-auto shadow-lg rounded-md form-transition space-y-8 inset-0 absolute overflow-auto">
+          <div className="z-50 bg-white h-[80%] w-[70%] m-auto shadow-lg rounded-2xl form-transition space-y-8 inset-0 absolute overflow-auto">
             <h3 className="text-xl font-bold p-3 h-[8%]">Your Post</h3>
             <div className="border" style={{ margin: 0 }} />
             <form
@@ -247,7 +247,7 @@ const FormWrapper = () => {
                       <FormItem>
                         <FormLabel>Photo</FormLabel>
                         <FormControl>
-                          <div>
+                          <>
                             <Input
                               {...rest}
                               type="file"
@@ -257,9 +257,14 @@ const FormWrapper = () => {
                               id="inputFile"
                               className="hidden"
                             />
+
                             <label
                               htmlFor="inputFile"
-                              className="border px-3 py-2 flex items-center gap-2"
+                              className="border px-3 py-2 flex items-center gap-2 rounded-md"
+                              tabIndex={0}
+                              // onClick={(e) =>
+                              //   document.getElementById("inputFile").click(e)
+                              // }
                             >
                               <Image
                                 src={upload}
@@ -268,7 +273,7 @@ const FormWrapper = () => {
                               />
                               {value?.name || "Click to upload image"}
                             </label>
-                          </div>
+                          </>
                         </FormControl>
                         <FormMessage />
                       </FormItem>

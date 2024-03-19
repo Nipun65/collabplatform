@@ -24,7 +24,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -78,65 +78,216 @@ const Content = () => {
     }
   };
 
+  // const [columnCount, setColumnCount] = useState(1);
+  // const [columns, setColumns] = useState([]);
+
+  // useEffect(() => {
+  //   const handleResize = () => {
+  //     const screenWidth = window.innerWidth;
+  //     if (screenWidth < 640) {
+  //       setColumnCount(2);
+  //     } else if (screenWidth < 1024) {
+  //       setColumnCount(3);
+  //     } else {
+  //       setColumnCount(4);
+  //     }
+  //   };
+
+  //   handleResize(); // Set initial column count
+  //   window.addEventListener("resize", handleResize);
+  //   return () => window.removeEventListener("resize", handleResize);
+  // }, []);
+
+  // useEffect(() => {
+  //   const generateColumns = () => {
+  //     const newColumns: any = [];
+  //     if (data) {
+  //       for (let i = 0; i < columnCount; i++) {
+  //         const numCards = Math.ceil(data?.length / columnCount); // Random number of cards from 1 to 3
+  //         const cards = [];
+  //         // console.log(numCards);
+
+  //         for (let j = 0; j < numCards; j++) {
+  //           console.log(numCards * i + j);
+  //           cards.push(
+  //             <Card
+  //               key={`${i}-${j}`}
+  //               className="max-w-72 items-center border-0 flex flex-col h-fit break-all rounded-2xl"
+  //             >
+  //               <Image
+  //                 src={data[numCards * i + j]?.image?.url || nextjs}
+  //                 alt="brand logo"
+  //                 className="fit-content h-72 w-72 rounded-t-2xl"
+  //                 width={300}
+  //                 height={300}
+  //               />
+  //               <div className="border w-full border-[#f5f5f5]" />
+  //               <div className="w-full">
+  //                 <CardHeader className="flex flex-col p-3">
+  //                   <div className="flex justify-between">
+  //                     <div>
+  //                       <CardTitle>{data[numCards * i + j]?.name}</CardTitle>
+  //                       <CardDescription>
+  //                         {data[numCards * i + j]?.headline ||
+  //                           data[numCards * i + j]?.role}
+  //                       </CardDescription>
+  //                     </div>
+  //                     {session?.user?.email ===
+  //                       data[numCards * i + j]?.loggedInEmail && (
+  //                       <DropdownMenu>
+  //                         <DropdownMenuTrigger asChild>
+  //                           <Button
+  //                             variant="outline"
+  //                             className="rounded-full p-2 h-8 w-8"
+  //                           >
+  //                             <Image src={dots} alt="more option" />
+  //                           </Button>
+  //                         </DropdownMenuTrigger>
+  //                         <DropdownMenuContent className="w-32">
+  //                           <DropdownMenuCheckboxItem
+  //                             onClick={() =>
+  //                               handleOption("edit", data[numCards * i + j])
+  //                             }
+  //                           >
+  //                             Edit
+  //                           </DropdownMenuCheckboxItem>
+  //                           <DropdownMenuCheckboxItem
+  //                             onClick={() =>
+  //                               handleOption("delete", data[numCards * i + j])
+  //                             }
+  //                           >
+  //                             Delete
+  //                           </DropdownMenuCheckboxItem>
+  //                         </DropdownMenuContent>
+  //                       </DropdownMenu>
+  //                     )}
+  //                   </div>
+  //                   <div>
+  //                     <CardDescription
+  //                       className={`mt-3 opacity-80 overflow-auto h-fit max-h-16 text-wrap`}
+  //                     >
+  //                       {data[numCards * i + j]?.description?.length > 0
+  //                         ? data[numCards * i + j]?.description
+  //                         : "No description"}
+  //                     </CardDescription>
+  //                   </div>
+  //                 </CardHeader>
+  //                 <CardContent className="p-3 pt-0">
+  //                   <p className="tracking-tight mb-2">Connect</p>
+  //                   <ul className="flex gap-4">
+  //                     {SOCIALLINKS.map(
+  //                       (value: { logo: any; social: string }) => {
+  //                         return (
+  //                           (data[numCards * i + j]?.socialLinks?.[0]?.[
+  //                             value.social
+  //                           ] ||
+  //                             (value.social === "gmail" &&
+  //                               data[numCards * i + j]?.email)) && (
+  //                             <li className="border rounded-full p-1.5">
+  //                               <Link
+  //                                 href={
+  //                                   (value.social === "gmail"
+  //                                     ? `mailto:${
+  //                                         data[numCards * i + j]?.email
+  //                                       }`
+  //                                     : data[numCards * i + j]
+  //                                         ?.socialLinks?.[0]?.[value.social]) ||
+  //                                   ""
+  //                                 }
+  //                                 target="__blank"
+  //                               >
+  //                                 <Image
+  //                                   className="h-5 w-5 table-cell align-middle"
+  //                                   src={value.logo}
+  //                                   alt="social link"
+  //                                 />
+  //                               </Link>
+  //                             </li>
+  //                           )
+  //                         );
+  //                       }
+  //                     )}
+  //                   </ul>
+  //                 </CardContent>
+  //               </div>
+  //             </Card>
+  //           );
+  //         }
+
+  //         newColumns.push(
+  //           <div key={i} className="flex flex-col gap-2">
+  //             {cards}
+  //           </div>
+  //         );
+  //       }
+  //       setColumns(newColumns);
+  //     }
+  //   };
+
+  //   generateColumns();
+  // }, [data, columnCount]);
+
   return (
     <div className="bg-[#171717] h-[90%] overflow-auto p-4">
       {data?.length > 0 && (
-        <div className="p-4 xs:place-items-center xs:grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4 grid">
+        <div className="p-4 xs:place-items-center sm:place-items-start xs:grid-cols-1 sm:grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 grid">
+          {/* {status === "fulfilled" && columns} */}
           {status === "fulfilled" &&
             data?.map((explore: any) => (
-              <Card className="max-w-72 items-center flex flex-col h-fit break-all">
+              <Card className="max-w-72 items-center border-0 flex flex-col h-fit break-all rounded-2xl flex-grow-0 basis-150">
                 <Image
                   src={explore?.image?.url || nextjs}
                   alt="brand logo"
-                  className="fit-content h-72 w-72 object-fit rounded-t-lg"
+                  className="fit-content h-72 w-72 rounded-t-2xl"
                   width={300}
                   height={300}
                 />
-                <div className="border w-full" />
+                <div className="border w-full border-[#f5f5f5]" />
                 <div className="w-full">
-                  <CardHeader
-                    className="flex justify-between"
-                    style={{ flexDirection: "row", alignItems: "start" }}
-                  >
+                  <CardHeader className="flex flex-col p-3">
+                    <div className="flex justify-between">
+                      <div>
+                        <CardTitle>{explore?.name}</CardTitle>
+                        <CardDescription>
+                          {explore?.headline || explore?.role}
+                        </CardDescription>
+                      </div>
+                      {session?.user?.email === explore?.loggedInEmail && (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className="rounded-full p-2 h-8 w-8"
+                            >
+                              <Image src={dots} alt="more option" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent className="w-32">
+                            <DropdownMenuCheckboxItem
+                              onClick={() => handleOption("edit", explore)}
+                            >
+                              Edit
+                            </DropdownMenuCheckboxItem>
+                            <DropdownMenuCheckboxItem
+                              onClick={() => handleOption("delete", explore)}
+                            >
+                              Delete
+                            </DropdownMenuCheckboxItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      )}
+                    </div>
                     <div>
-                      <CardTitle>{explore?.name}</CardTitle>
-                      <CardDescription>
-                        {explore?.headline || explore?.role}
-                      </CardDescription>
                       <CardDescription
-                        className={`mt-3 opacity-80 overflow-auto h-16 text-wrap`}
+                        className={`mt-3 opacity-80 overflow-auto h-fit max-h-16 text-wrap`}
                       >
                         {explore?.description?.length > 0
                           ? explore?.description
                           : "No description"}
                       </CardDescription>
                     </div>
-                    {session?.user?.email === explore?.loggedInEmail && (
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className="rounded-full p-2 h-8 w-8"
-                          >
-                            <Image src={dots} alt="more option" className="" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-32">
-                          <DropdownMenuCheckboxItem
-                            onClick={() => handleOption("edit", explore)}
-                          >
-                            Edit
-                          </DropdownMenuCheckboxItem>
-                          <DropdownMenuCheckboxItem
-                            onClick={() => handleOption("delete", explore)}
-                          >
-                            Delete
-                          </DropdownMenuCheckboxItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    )}
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="p-3 pt-0">
                     <p className="tracking-tight mb-2">Connect</p>
                     <ul className="flex gap-4">
                       {SOCIALLINKS.map(

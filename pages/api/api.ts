@@ -1,43 +1,13 @@
 import axios from "axios";
 
-const API_URL = process.env.BACKEND_URL;
+const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-const fetchPost = () => {
-  try {
-    const posts = axios.get(`${API_URL}/get-explore`);
-    return posts;
-  } catch (error) {
-    console.error(error);
-  }
+const getTokens = async (payload: any) => {
+  console.log(API_URL);
+  const result: any = await axios.post(`${API_URL}/auth`, payload);
+  localStorage.setItem("accesstoken", result.accessToken);
+  localStorage.setItem("refreshtoken", result.refreshToken);
+  return result;
 };
 
-const addPost = (post: any) => {
-  const TEMP = {
-    email: "ffsad@gmail.com",
-    mobileNumber: 35253253252,
-    image: "fsafsafasfsaf",
-    work: ["fsafsf", "fsffsdf"],
-    socialLinks: [
-      {
-        insta: "sfafasfas",
-        meta: "fasfsaf",
-        tiktok: "dsgs",
-        linkedin: "safsafsa",
-      },
-    ],
-  };
-  try {
-    axios
-      .post(`${API_URL}/add-post`, post)
-      .then((result) => {
-        console.log(result);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-export default { fetchPost, addPost };
+export { getTokens };
