@@ -14,6 +14,7 @@ interface LoginCompProps {
 }
 const LoginComp: React.FC<LoginCompProps> = ({ status, className }) => {
   const router = useRouter();
+
   return (
     <div className={twMerge("rounded border h-fit", className)}>
       <Button
@@ -24,9 +25,9 @@ const LoginComp: React.FC<LoginCompProps> = ({ status, className }) => {
             if (result) router.push("/explore");
           })
         }
-        disabled={status !== "unauthenticated"}
+        disabled={status === "loading"}
       >
-        {status === "unauthenticated" ? (
+        {status === "unauthenticated" || !status ? (
           <Image src={google} alt="google" className="h-7 w-7" />
         ) : (
           <Loader className="h-7 w-7" />
