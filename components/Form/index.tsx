@@ -53,10 +53,26 @@ const formSchema = z.object({
       }
     ),
   socialLinks: z.object({
-    insta: z.string().url({ message: "Please Enter Valid URL" }).optional(),
-    facebook: z.string().url({ message: "Please Enter Valid URL" }).optional(),
-    twitter: z.string().url({ message: "Please Enter Valid URL" }).optional(),
-    linkedin: z.string().url({ message: "Please Enter Valid URL" }).optional(),
+    insta: z
+      .string()
+      .url({ message: "Please Enter Valid URL" })
+      .optional()
+      .or(z.literal("")),
+    facebook: z
+      .string()
+      .url({ message: "Please Enter Valid URL" })
+      .optional()
+      .or(z.literal("")),
+    twitter: z
+      .string()
+      .url({ message: "Please Enter Valid URL" })
+      .optional()
+      .or(z.literal("")),
+    linkedin: z
+      .string()
+      .url({ message: "Please Enter Valid URL" })
+      .optional()
+      .or(z.literal("")),
   }),
 });
 

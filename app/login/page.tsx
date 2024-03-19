@@ -13,12 +13,13 @@ const Login = () => {
   }, [session, router]);
   return (
     <div className="flex w-full h-screen">
-      <div className="w-[70%] h-full text-center flex items-center justify-center login-bg">
-        <h1 className="text-[#ddd9d9] font-bold text-7xl">
+      <div className="xs:w-full md:w-[70%] text-center h-full flex flex-col gap-4 items-center justify-center login-bg">
+        <h1 className="text-[#ddd9d9] font-bold xs:text-6xl lg:text-7xl">
           Collab With Humans.
         </h1>
+        <LoginComp status={status} className="xs:block md:hidden" />
       </div>
-      <div className="items-center flex justify-center w-[30%]">
+      <div className="items-center flex justify-center xs:hidden md:flex md:w-[30%]">
         <LoginComp status={status} />
       </div>
     </div>

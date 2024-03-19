@@ -228,7 +228,7 @@ const Content = () => {
   // }, [data, columnCount]);
 
   return (
-    <div className="bg-[#171717] h-[90%] overflow-auto p-4">
+    <div className="bg-[#111812] h-[90%] overflow-auto p-4">
       {data?.length > 0 && (
         <div className="p-4 xs:place-items-center sm:place-items-start xs:grid-cols-1 sm:grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 grid">
           {/* {status === "fulfilled" && columns} */}
