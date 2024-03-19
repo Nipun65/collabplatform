@@ -1,6 +1,6 @@
 import { v2 as cloudinary } from "cloudinary";
 import dotenv from "dotenv";
-import path = require("path");
+import path from "path";
 
 dotenv.config({ path: path.resolve(__dirname, "./../.env") });
 

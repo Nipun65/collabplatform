@@ -29,7 +29,7 @@ const Header = () => {
           <NavigationMenuList className="flex gap-3">
             {HEADERTABS.map((value: any) => {
               return (
-                <NavigationMenuItem>
+                <NavigationMenuItem key={value.path}>
                   <Link href={value.path} legacyBehavior passHref>
                     <NavigationMenuLink
                       className={`${navigationMenuTriggerStyle()} ${

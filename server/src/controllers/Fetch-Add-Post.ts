@@ -1,7 +1,8 @@
 import { PostModel } from "../models/Post";
 import cloudinary from "../../cloudinary.config";
+import { Request, Response, NextFunction } from "express";
 
-const uploadImage = async (data) => {
+const uploadImage = async (data: any) => {
   const uploadResponse = await cloudinary.uploader.upload(data.data, {
     folder: "collab",
   });
@@ -12,7 +13,7 @@ const uploadImage = async (data) => {
   };
 };
 
-const addPost = async (req, res, next) => {
+const addPost = async (req: Request, res: Response, next: NextFunction) => {
   const postData = req?.body;
   const image = await uploadImage(postData?.photo);
   const post = new PostModel({
@@ -30,7 +31,7 @@ const addPost = async (req, res, next) => {
   });
 };
 
-const getPost = async (req, res, next) => {
+const getPost = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = await PostModel.find();
     res.json(data);
@@ -40,7 +41,7 @@ const getPost = async (req, res, next) => {
   }
 };
 
-const getYourPost = async (req, res, next) => {
+const getYourPost = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const email = req?.query?.email;
     const data = await PostModel.find({ loggedInEmail: email });
@@ -50,7 +51,7 @@ const getYourPost = async (req, res, next) => {
   }
 };
 
-const deletePost = async (req, res, next) => {
+const deletePost = async (req: Request, res: Response, next: NextFunction) => {
   const id = req?.body?._id;
   const data = await PostModel.findOne({ _id: id });
   const imgId = data?.image?.public_id;
@@ -66,10 +67,10 @@ const deletePost = async (req, res, next) => {
   }
 };
 
-const updatePost = async (req, res, next) => {
+const updatePost = async (req: Request, res: Response, next: NextFunction) => {
   const body = req?.body;
   const id = req?.body?._id;
-  let imgId: string;
+  let imgId: string = "";
   const image = body?.photo?.data;
 
   if (image.length > 0) {
@@ -79,8 +80,7 @@ const updatePost = async (req, res, next) => {
   let newImg: any = {};
 
   try {
-    console.log(imgId);
-    if (imgId) {
+    if (imgId.length > 0) {
       await cloudinary.uploader.destroy(imgId);
 
       newImg = await cloudinary.uploader.upload(image, {

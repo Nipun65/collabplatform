@@ -47,23 +47,22 @@ const Content = () => {
   const { data: session, status: sessionStatus } = useSession();
   const [deletePost, { error: deleteError }] = useDeletePostMutation();
   const [loading, setLoading] = useState(false);
-
+  const { data: exploreData, status: exploreStatus } = useGetExplorePostQuery(
+    {}
+  );
+  const { data: yourPosts, status: yourPostStatus } = useGetYourPostQuery(
+    session?.user?.email || ""
+  );
   if (path === "/explore") {
-    const { data: exploreData, status: exploreStatus } = useGetExplorePostQuery(
-      {}
-    );
     data = exploreData;
     status = exploreStatus;
   } else if (path === "/your-posts") {
-    const { data: yourPosts, status: yourPostStatus } = useGetYourPostQuery(
-      session?.user?.email || ""
-    );
     data = yourPosts;
     status = yourPostStatus;
   }
 
-  const [showAlert, setShowAlert] = useState(false);
   const dispatch = useAppDispatch();
+  const [showAlert, setShowAlert] = useState(false);
 
   const [activeIndex, setActiveIndex] = useState<any>(null);
   const handleOption = async (action: string, explore: any) => {
@@ -234,7 +233,10 @@ const Content = () => {
           {/* {status === "fulfilled" && columns} */}
           {status === "fulfilled" &&
             data?.map((explore: any) => (
-              <Card className="max-w-72 items-center border-0 flex flex-col h-fit break-all rounded-2xl flex-grow-0 basis-150">
+              <Card
+                className="max-w-72 items-center border-0 flex flex-col h-fit break-all rounded-2xl flex-grow-0 basis-150"
+                key={explore?._id}
+              >
                 <Image
                   src={explore?.image?.url || nextjs}
                   alt="brand logo"
