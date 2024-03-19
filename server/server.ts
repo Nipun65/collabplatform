@@ -9,7 +9,12 @@ import cors from "cors";
 
 const app = express();
 app.use(express.json({ limit: "50mb" }));
-app.use(cors({ origin: "http://localhost:3000", optionsSuccessStatus: 200 }));
+app.use(
+  cors({
+    origin: "https://collabplatform.vercel.app/",
+    optionsSuccessStatus: 200,
+  })
+);
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 const PORT = process.env.BACKEND_PORT;
