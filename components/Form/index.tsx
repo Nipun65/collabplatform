@@ -20,7 +20,8 @@ import { useSession } from "next-auth/react";
 import { formValue, setFormData } from "@/redux/PostSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import upload from "@/public/upload.svg";
-import Loader from "../Loader";
+import Loader from "../ui/loader";
+import { FormState, Post, State } from "@/interfaces";
 
 const formSchema = z.object({
   name: z.string().nonempty("This is required").min(2, {
@@ -77,7 +78,7 @@ const formSchema = z.object({
 });
 
 const FormWrapper = () => {
-  const formData: any = useAppSelector(formValue);
+  const formData: FormState = useAppSelector((state: State) => state.formData);
   const dispatch = useAppDispatch();
 
   const [addYourPost, { isLoading, isSuccess, isError, error }] =
@@ -96,10 +97,10 @@ const FormWrapper = () => {
       },
       email: formData?.data?.email || "",
       socialLinks: {
-        linkedin: formData?.data?.socialLinks?.linkedin || "",
-        facebook: formData?.data?.socialLinks?.facebook || "",
-        insta: formData?.data?.socialLinks?.insta || "",
-        twitter: formData?.data?.socialLinks?.twitter || "",
+        facebook: formData?.data?.socialLinks?.[0]?.facebook || "",
+        linkedin: formData?.data?.socialLinks?.[0]?.linkedin || "",
+        insta: formData?.data?.socialLinks?.[0]?.insta || "",
+        twitter: formData?.data?.socialLinks?.[0]?.twitter || "",
       },
     },
   });
@@ -126,12 +127,12 @@ const FormWrapper = () => {
       result = await updatePost({
         ...formData?.data,
         ...values,
-      });
+      } as Post);
     } else {
       result = await addYourPost({
         ...values,
-        loggedInEmail: session?.user?.email,
-      });
+        loggedInEmail: session?.user?.email as string,
+      } as Post);
     }
 
     if (result) {
@@ -409,7 +410,7 @@ const FormWrapper = () => {
         </Form>
       )}
       <div
-        className="z-50 absolute bottom-6 right-14 cursor-pointer"
+        className="z-50 absolute bottom-6 xs:right-7 md:right-10 lg:right-14 cursor-pointer"
         onClick={() => setFormOnClose(formData?.action)}
       >
         <div className="rounded-full bg-white xs:p-3 lg:p-4">

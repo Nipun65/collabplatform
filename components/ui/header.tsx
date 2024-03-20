@@ -1,4 +1,4 @@
-import { HEADERTABS } from "@/utils/constants.utis";
+import { HEADERTABS } from "@/utils/constants.utils";
 import { Avatar, AvatarFallback } from "@radix-ui/react-avatar";
 import { AvatarImage } from "./avatar";
 import { useSession } from "next-auth/react";
@@ -27,7 +27,7 @@ const Header = () => {
       >
         <NavigationMenu>
           <NavigationMenuList className="flex gap-3">
-            {HEADERTABS.map((value: any) => {
+            {HEADERTABS.map((value: { name: string; path: string }) => {
               return (
                 <NavigationMenuItem key={value.path}>
                   <Link href={value.path} legacyBehavior passHref>

@@ -2,7 +2,7 @@
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Wrapper from "@/components/Layout";
-import Loader from "@/components/Loader";
+import Loader from "@/components/ui/loader";
 
 const Home = () => {
   const { data: session, status } = useSession();

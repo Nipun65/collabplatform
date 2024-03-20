@@ -14,7 +14,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { SOCIALLINKS } from "@/utils/constants.utis";
+import { SOCIALLINKS } from "@/utils/constants.utils";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
@@ -37,13 +37,15 @@ import {
 import dots from "@/public/dots.svg";
 import { setFormData } from "@/redux/PostSlice";
 import { useAppDispatch } from "@/redux/hooks";
-import Loader from "@/components/Loader";
+import Loader from "@/components/ui/loader";
+import { Post, SocialLinks } from "@/interfaces";
+import { QueryStatus } from "@reduxjs/toolkit/query";
 
 const Content = () => {
-  const path = usePathname();
-  let data: any;
-  let status: any;
+  let data: Post[] = [];
+  let status: QueryStatus = QueryStatus.uninitialized;
 
+  const path = usePathname();
   const { data: session, status: sessionStatus } = useSession();
   const [deletePost, { error: deleteError }] = useDeletePostMutation();
   const [loading, setLoading] = useState(false);
@@ -64,8 +66,11 @@ const Content = () => {
   const dispatch = useAppDispatch();
   const [showAlert, setShowAlert] = useState(false);
 
-  const [activeIndex, setActiveIndex] = useState<any>(null);
-  const handleOption = async (action: string, explore: any) => {
+  const [activeIndex, setActiveIndex] = useState<{
+    _id: string;
+    loggedInEmail: string;
+  }>({ _id: "", loggedInEmail: "" });
+  const handleOption = async (action: string, explore: Post) => {
     if (action === "edit") {
       dispatch(setFormData({ data: explore, showModal: true, action: "edit" }));
     } else if (action === "delete") {
@@ -232,9 +237,9 @@ const Content = () => {
         <div className="p-4 xs:place-items-center sm:place-items-start xs:grid-cols-1 sm:grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 grid">
           {/* {status === "fulfilled" && columns} */}
           {status === "fulfilled" &&
-            data?.map((explore: any) => (
+            data?.map((explore: Post) => (
               <Card
-                className="max-w-72 items-center border-0 flex flex-col h-fit break-all rounded-2xl flex-grow-0 basis-150"
+                className="max-w-72 items-center border-0 flex flex-col h-fit break-all break-words rounded-2xl flex-grow-0 basis-150"
                 key={explore?._id}
               >
                 <Image
@@ -243,6 +248,7 @@ const Content = () => {
                   className="fit-content h-72 w-72 rounded-t-2xl"
                   width={300}
                   height={300}
+                  priority
                 />
                 <div className="border w-full border-[#f5f5f5]" />
                 <div className="w-full">
@@ -250,9 +256,7 @@ const Content = () => {
                     <div className="flex justify-between">
                       <div>
                         <CardTitle>{explore?.name}</CardTitle>
-                        <CardDescription>
-                          {explore?.headline || explore?.role}
-                        </CardDescription>
+                        <CardDescription>{explore?.headline}</CardDescription>
                       </div>
                       {session?.user?.email === explore?.loggedInEmail && (
                         <DropdownMenu>
@@ -293,17 +297,22 @@ const Content = () => {
                     <p className="tracking-tight mb-2">Connect</p>
                     <ul className="flex gap-4">
                       {SOCIALLINKS.map(
-                        (value: { logo: any; social: string }) => {
+                        (value: { logo: string; social: string }) => {
                           return (
-                            (explore?.socialLinks?.[0]?.[value.social] ||
+                            (explore?.socialLinks?.[0]?.[
+                              value.social as keyof SocialLinks
+                            ] ||
                               (value.social === "gmail" && explore?.email)) && (
-                              <li className="border rounded-full p-1.5">
+                              <li
+                                className="border rounded-full p-1.5"
+                                key={value.social}
+                              >
                                 <Link
                                   href={
                                     (value.social === "gmail"
                                       ? `mailto:${explore?.email}`
                                       : explore?.socialLinks?.[0]?.[
-                                          value.social
+                                          value.social as keyof SocialLinks
                                         ]) || ""
                                   }
                                   target="__blank"

@@ -1,8 +1,9 @@
-import { createSlice, current } from "@reduxjs/toolkit";
+import { FormState, State } from "@/interfaces";
+import { createSlice } from "@reduxjs/toolkit";
 
 const formData = createSlice({
   name: "form data",
-  initialState: { data: {}, showModal: false, action: "" },
+  initialState: { data: {}, showModal: false, action: "" } as FormState,
   reducers: {
     setFormData(state, action) {
       const payload = action.payload;
@@ -17,7 +18,7 @@ const formData = createSlice({
   },
 });
 
-export const formValue = (state: any) => {
+export const formValue = (state: State) => {
   return state.formData;
 };
 

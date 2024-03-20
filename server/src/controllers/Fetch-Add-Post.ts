@@ -1,8 +1,14 @@
 import { PostModel } from "../models/Post";
 import cloudinary from "../../cloudinary.config";
 import { Request, Response, NextFunction } from "express";
+import { UploadApiResponse } from "cloudinary";
 
-const uploadImage = async (data: any) => {
+interface Data {
+  data: string;
+  name: string;
+}
+
+const uploadImage = async (data: Data) => {
   const uploadResponse = await cloudinary.uploader.upload(data.data, {
     folder: "collab",
   });
@@ -77,7 +83,7 @@ const updatePost = async (req: Request, res: Response, next: NextFunction) => {
     imgId = body?.image?.public_id;
   }
 
-  let newImg: any = {};
+  let newImg: UploadApiResponse;
 
   try {
     if (imgId.length > 0) {

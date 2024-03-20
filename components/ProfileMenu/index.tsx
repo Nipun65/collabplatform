@@ -1,9 +1,10 @@
+import { Session } from "next-auth";
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction } from "react";
 
 interface ProfileMenuProps {
-  session: any;
+  session: Session | null;
   setShowMenu: Dispatch<SetStateAction<boolean>>;
 }
 const ProfileMenu: React.FC<ProfileMenuProps> = ({ session, setShowMenu }) => {
@@ -15,8 +16,8 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ session, setShowMenu }) => {
     >
       <div className="px-4 py-2">
         <div className="text-sm">
-          <p>{session.user?.name}</p>
-          <p className="opacity-70">{session.user?.email}</p>
+          <p>{session?.user?.name}</p>
+          <p className="opacity-70">{session?.user?.email}</p>
         </div>
       </div>
       <div className="w-full border mt-2" />

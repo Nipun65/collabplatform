@@ -1,9 +1,9 @@
+import { Post } from "@/interfaces";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-const updateCache = (post: any, data: any) => {
-  console.log(data);
+const updateCache = (post: Post, data: Post) => {
   post._id = data._id;
   post.loggedInEmail = data.loggedInEmail;
   post.name = data.name;
@@ -33,7 +33,7 @@ export const collabapi = createApi({
       },
     }),
     addYourPost: builder.mutation({
-      query: (body: any) => {
+      query: (body: Post) => {
         return {
           url: `/post`,
           method: "POST",
@@ -54,7 +54,6 @@ export const collabapi = createApi({
         );
         dispatch(
           collabapi.util.updateQueryData("getExplorePost", {}, (draft) => {
-            console.log(JSON.stringify(data));
             draft?.push(data);
             return draft;
           })
@@ -62,7 +61,7 @@ export const collabapi = createApi({
       },
     }),
     deletePost: builder.mutation({
-      query: (body: any) => {
+      query: (body: { _id: string; loggedInEmail: string }) => {
         return {
           url: `/delete-post`,
           method: "DELETE",
@@ -76,20 +75,19 @@ export const collabapi = createApi({
             "getYourPost",
             body?.loggedInEmail,
             (draft) => {
-              return draft?.filter((post: any) => post?._id !== body?._id);
+              return draft?.filter((post: Post) => post?._id !== body?._id);
             }
           )
         );
         dispatch(
           collabapi.util.updateQueryData("getExplorePost", {}, (draft) => {
-            console.log(JSON.stringify(body));
-            return draft?.filter((post: any) => post?._id !== body?._id);
+            return draft?.filter((post: Post) => post?._id !== body?._id);
           })
         );
       },
     }),
     updatePost: builder.mutation({
-      query: (body: any) => {
+      query: (body: Post) => {
         return {
           url: `/update-post`,
           method: "PUT",
@@ -103,7 +101,7 @@ export const collabapi = createApi({
             "getYourPost",
             body?.loggedInEmail,
             (draft) => {
-              let post = draft?.find((post: any) => post?._id === body?._id);
+              let post = draft?.find((post: Post) => post?._id === body?._id);
               updateCache(post, data);
               post = data;
             }
@@ -111,8 +109,7 @@ export const collabapi = createApi({
         );
         dispatch(
           collabapi.util.updateQueryData("getExplorePost", {}, (draft) => {
-            let post = draft?.find((post: any) => post?._id === data?._id);
-            console.log(JSON.stringify(data));
+            let post = draft?.find((post: Post) => post?._id === data?._id);
             updateCache(post, data);
           })
         );
