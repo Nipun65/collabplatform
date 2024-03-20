@@ -11,7 +11,7 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ session, setShowMenu }) => {
   const router = useRouter();
   return (
     <div
-      className="absolute border top-12 right-1 bg-white shadow rounded-sm"
+      className="absolute border top-12 right-1 bg-white shadow rounded-sm z-[100]"
       onMouseDown={(e) => e.stopPropagation()}
     >
       <div className="px-4 py-2">
