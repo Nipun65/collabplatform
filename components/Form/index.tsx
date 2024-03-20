@@ -187,7 +187,7 @@ const FormWrapper = () => {
       {formData?.showModal && (
         <Form {...form}>
           <div className="z-50 bg-white h-[80%] w-[70%] m-auto shadow-lg rounded-2xl form-transition space-y-8 inset-0 absolute overflow-auto">
-            <h3 className="text-xl font-bold p-3 h-[8%]">Your Post</h3>
+            <h3 className="text-xl font-bold p-3 h-[8%]">Add Your Post</h3>
             <div className="border" style={{ margin: 0 }} />
             <form
               onSubmit={form.handleSubmit(onSubmit)}

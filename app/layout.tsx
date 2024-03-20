@@ -11,7 +11,7 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-  title: "Collab App",
+  title: "Collab Platform",
   description: "Collaborate with people",
 };
 
