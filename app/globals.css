@@ -112,12 +112,14 @@
   }
 }
 
-.shine-btn {
+.shine-btn,
+.navigation-btn {
   position: relative;
   overflow: hidden;
 }
 
-.shine-btn:before {
+.shine-btn:before,
+.navigation-btn:hover::before {
   content: "";
   position: absolute;
   width: 100px;
