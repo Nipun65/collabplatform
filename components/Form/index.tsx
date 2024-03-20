@@ -1,7 +1,7 @@
 "use client";
 import plus from "@/public/plus.svg";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -81,8 +81,11 @@ const FormWrapper = () => {
   const formData: FormState = useAppSelector((state: State) => state.formData);
   const dispatch = useAppDispatch();
 
-  const [addYourPost, { isLoading, isSuccess, isError, error }] =
-    useAddYourPostMutation();
+  const [addYourPost] = useAddYourPostMutation();
+  const { data: session } = useSession();
+  const [updatePost] = useUpdatePostMutation();
+
+  const inputFileRef = useRef<HTMLInputElement>(null);
 
   const [loading, setLoading] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
@@ -115,10 +118,6 @@ const FormWrapper = () => {
     }
     form.setValue("socialLinks", formData?.data?.socialLinks?.[0]);
   }, [formData]);
-
-  const { data: session, status } = useSession();
-
-  const [updatePost, { error: updatePostError }] = useUpdatePostMutation();
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     let result;
@@ -273,15 +272,17 @@ const FormWrapper = () => {
                               accept="image/*"
                               id="inputFile"
                               className="hidden"
+                              ref={inputFileRef}
                             />
 
                             <label
                               htmlFor="inputFile"
                               className="border px-3 py-2 flex items-center gap-2 rounded-md"
                               tabIndex={0}
-                              // onClick={(e) =>
-                              //   document.getElementById("inputFile").click(e)
-                              // }
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter")
+                                  inputFileRef?.current?.click();
+                              }}
                             >
                               <Image
                                 src={upload}
@@ -390,13 +391,13 @@ const FormWrapper = () => {
                 <Button
                   variant={"secondary"}
                   onClick={() => setFormOnClose(formData?.action)}
-                  className=" min-w-1/2 w-fit px-6 xs:text-[0.5rem] md:text-base"
+                  className=" min-w-1/2 w-fit px-6 xs:text-[0.7rem] md:text-base"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
-                  className="min-w-1/2 w-fit px-6 xs:text-[0.5rem] md:text-base flex gap-3"
+                  className="min-w-1/2 w-fit px-6 xs:text-[0.7rem] md:text-base flex gap-3"
                   disabled={loading}
                 >
                   Submit
@@ -410,7 +411,7 @@ const FormWrapper = () => {
         </Form>
       )}
       <div
-        className="z-50 absolute bottom-6 xs:right-7 md:right-10 lg:right-14 cursor-pointer"
+        className="z-50 absolute xs:bottom-4 lg:bottom-6 xs:right-4 md:right-10 lg:right-14 cursor-pointer"
         onClick={() => setFormOnClose(formData?.action)}
       >
         <div className="rounded-full bg-white xs:p-3 lg:p-4">
