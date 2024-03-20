@@ -8,9 +8,6 @@ const Login = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  useEffect(() => {
-    if (session) router.push("/explore");
-  }, [session, router]);
   return (
     <div className="flex w-full h-screen">
       <div className="xs:w-full md:w-[70%] text-center h-full flex flex-col gap-7 items-center justify-center login-bg">
