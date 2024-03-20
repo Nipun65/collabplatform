@@ -1,11 +1,14 @@
 "use client";
-import plus from "@/public/plus.svg";
-import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
+import Image from "next/image";
+import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Button } from "@/components/ui/button";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useAddYourPostMutation, useUpdatePostMutation } from "@/redux/api";
+import { setFormData } from "@/redux/PostSlice";
+import { Loader } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -15,13 +18,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useAddYourPostMutation, useUpdatePostMutation } from "@/redux/api";
-import { useSession } from "next-auth/react";
-import { formValue, setFormData } from "@/redux/PostSlice";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import upload from "@/public/upload.svg";
-import Loader from "../ui/loader";
+import { Button } from "@/components/ui/button";
 import { FormState, Post, State } from "@/interfaces";
+import upload from "@/public/upload.svg";
+import plus from "@/public/plus.svg";
 
 const formSchema = z.object({
   name: z.string().nonempty("This is required").min(2, {
@@ -400,10 +400,10 @@ const FormWrapper = () => {
                   className="min-w-1/2 w-fit px-6 xs:text-[0.7rem] md:text-base flex gap-3"
                   disabled={loading}
                 >
-                  Submit
                   {loading && (
                     <Loader className="xs:h-3 xs:w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 text-white" />
                   )}
+                  Submit
                 </Button>
               </div>
             </form>

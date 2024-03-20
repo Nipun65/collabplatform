@@ -1,12 +1,18 @@
 "use client";
+import React, { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { QueryStatus } from "@reduxjs/toolkit/query";
+import { useAppDispatch } from "@/redux/hooks";
 import {
   useDeletePostMutation,
   useGetExplorePostQuery,
   useGetYourPostQuery,
 } from "@/redux/api";
-import Image from "next/image";
-import nextjs from "@/public/next.svg";
-import Link from "next/link";
+import { setFormData } from "@/redux/PostSlice";
+import { Loader as ReactLoader } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -14,17 +20,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { SOCIALLINKS } from "@/utils/constants.utils";
-import { usePathname } from "next/navigation";
-import { useSession } from "next-auth/react";
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import React, { useEffect, useState } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -34,12 +35,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import dots from "@/public/dots.svg";
-import { setFormData } from "@/redux/PostSlice";
-import { useAppDispatch } from "@/redux/hooks";
+import { Button } from "@/components/ui/button";
 import Loader from "@/components/ui/loader";
+import { SOCIALLINKS } from "@/utils/constants.utils";
 import { Post, SocialLinks } from "@/interfaces";
-import { QueryStatus } from "@reduxjs/toolkit/query";
+import dots from "@/public/dots.svg";
 
 const Content = () => {
   let data: Post[] = [];
@@ -243,7 +243,7 @@ const Content = () => {
                 key={explore?._id}
               >
                 <Image
-                  src={explore?.image?.url || nextjs}
+                  src={explore?.image?.url}
                   alt="brand logo"
                   className="fit-content h-72 w-72 rounded-t-2xl"
                   width={300}
@@ -374,10 +374,10 @@ const Content = () => {
               }}
               className="flex xs:gap-1 lg:gap-3 items-center justify-center"
             >
-              Delete
               {loading && (
-                <Loader className="xs:h-3 xs:w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 text-white" />
+                <ReactLoader className="xs:h-3 xs:w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 text-white" />
               )}
+              Delete
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

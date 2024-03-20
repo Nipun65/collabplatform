@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
-import "./globals.css";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import SessionProvider from "@/components/SessionProvider";
+import "./globals.css";
 
 const roboto = Roboto({
   subsets: ["latin"],

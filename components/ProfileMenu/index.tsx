@@ -1,7 +1,7 @@
+import { Dispatch, SetStateAction } from "react";
+import { useRouter } from "next/navigation";
 import { Session } from "next-auth";
 import { signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { Dispatch, SetStateAction } from "react";
 
 interface ProfileMenuProps {
   session: Session | null;

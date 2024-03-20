@@ -1,6 +1,6 @@
-import Content from "../Content";
-import FormWrapper from "../Form";
-import Header from "../ui/header";
+import Content from "@/components/Content";
+import FormWrapper from "@/components/Form";
+import Header from "@/components/ui/header";
 
 interface WrapperProps {
   children: React.ReactNode;
