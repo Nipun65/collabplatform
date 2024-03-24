@@ -16,11 +16,11 @@ const Login = () => {
           className="lg:absolute lg:top-3 lg:left-3 h-20 w-20"
         />
         <h1 className="text-[#ddd9d9] font-bold xs:text-6xl lg:text-7xl">
-          Collab With Humans.
+          Collab With Humans
         </h1>
         <LoginComp status={status} className="xs:block lg:hidden" />
       </div>
-      <div className="items-center flex justify-center xs:hidden lg:flex lg:w-[30%] ">
+      <div className="items-center justify-center hidden  lg:flex lg:w-[30%] ">
         <LoginComp status={status} />
       </div>
     </div>
