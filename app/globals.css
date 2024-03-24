@@ -119,7 +119,8 @@
 }
 
 .shine-btn:before,
-.navigation-btn:hover::before {
+.navigation-btn:hover::before,
+.navigation-btn:focus::before {
   content: "";
   position: absolute;
   width: 100px;

@@ -1,7 +1,9 @@
+import Image from "next/image";
 import { Dispatch, SetStateAction } from "react";
 import { useRouter } from "next/navigation";
 import { Session } from "next-auth";
 import { signOut } from "next-auth/react";
+import logout from "@/public/logout.svg";
 
 interface ProfileMenuProps {
   session: Session | null;
@@ -22,11 +24,13 @@ const ProfileMenu: React.FC<ProfileMenuProps> = ({ session, setShowMenu }) => {
       </div>
       <div className="w-full border mt-2" />
       <p
-        className="text-center hover:bg-slate-200 w-full transition ease-in-out cursor-pointer duration-150 px-4 py-1"
-        onClick={() => {
+        className="text-center hover:bg-slate-200 w-full transition ease-in-out cursor-pointer duration-150 px-4 py-3 flex items-center gap-3"
+        onMouseDown={() => {
           signOut({ callbackUrl: "/login" });
         }}
+        tabIndex={0}
       >
+        <Image src={logout} alt="logout" className="h-5 w-5" />
         Logout
       </p>
     </div>

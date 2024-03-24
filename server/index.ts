@@ -44,9 +44,6 @@ mongoose
 //   res.json({ accessToken, refreshToken });
 // });
 
-app.use("/", (req, res, next) => {
-  res.send("server is running");
-});
 app.use("/api", router);
 
 app.listen(PORT, () => console.log(`server started ${PORT}`));

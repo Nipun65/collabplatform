@@ -37,13 +37,13 @@ const Header = () => {
         />
         <div className="flex gap-5">
           <NavigationMenu>
-            <NavigationMenuList className="flex gap-3">
+            <NavigationMenuList className="flex gap-4">
               {HEADERTABS.map((value: { name: string; path: string }) => {
                 return (
                   <NavigationMenuItem key={value.path} className="bg-none">
                     <Link href={value.path} legacyBehavior passHref>
                       <NavigationMenuLink
-                        className={`tracking-widest text-white bg-transparent hover:text-white navigation-btn ${navigationMenuTriggerStyle()} ${
+                        className={`tracking-widest text-white bg-transparent hover:text-white navigation-btn xs:text-xs md:text-sm focus:text-white ${navigationMenuTriggerStyle()} ${
                           value.path === path?.toLocaleLowerCase()
                             ? "border"
                             : ""
@@ -60,6 +60,11 @@ const Header = () => {
 
           <div
             onBlur={() => setShowMenu(false)}
+            onKeyDown={(e) => {
+              if ((e.key = "Enter")) {
+                setShowMenu(!showMenu);
+              }
+            }}
             tabIndex={0}
             className="relative"
           >
