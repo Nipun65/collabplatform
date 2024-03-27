@@ -8,13 +8,21 @@ import path from "path";
 import cors from "cors";
 
 const app = express();
+const corsOptions = {
+  origin: (origin, callback) => {
+    console.log(origin);
+    if (origin === "https://collabplatform.vercel.app") {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  optionsSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
+
 app.use(express.json({ limit: "50mb" }));
-app.use(
-  cors({
-    origin: "https://collabplatform.vercel.app",
-    optionsSuccessStatus: 200,
-  })
-);
 
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
