@@ -10,7 +10,6 @@ import cors from "cors";
 const app = express();
 const corsOptions = {
   origin: (origin, callback) => {
-    console.log(origin);
     if (origin === "https://collabplatform.vercel.app") {
       callback(null, true);
     } else {
