@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -37,7 +37,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import Loader from "@/components/ui/loader";
-import { SOCIALLINKS } from "@/utils/constants.utils";
+import { SOCIALLINKS, EXPLORES } from "@/utils/constants.utils";
 import { Post, SocialLinks } from "@/interfaces";
 import dots from "@/public/dots.svg";
 
@@ -82,161 +82,157 @@ const Content = () => {
     }
   };
 
-  // const [columnCount, setColumnCount] = useState(1);
-  // const [columns, setColumns] = useState([]);
+  const [columnCount, setColumnCount] = useState(1);
+  const [columns, setColumns] = useState([]);
 
-  // useEffect(() => {
-  //   const handleResize = () => {
-  //     const screenWidth = window.innerWidth;
-  //     if (screenWidth < 640) {
-  //       setColumnCount(2);
-  //     } else if (screenWidth < 1024) {
-  //       setColumnCount(3);
-  //     } else {
-  //       setColumnCount(4);
-  //     }
-  //   };
+  useEffect(() => {
+    const handleResize = () => {
+      const screenWidth = window.innerWidth;
+      if (screenWidth >= 640 && screenWidth < 768) {
+        setColumnCount(2);
+      } else if (screenWidth >= 768 && screenWidth < 1024) {
+        setColumnCount(3);
+      } else if (screenWidth >= 1024) {
+        setColumnCount(4);
+      } else {
+        setColumnCount(1);
+      }
+    };
 
-  //   handleResize(); // Set initial column count
-  //   window.addEventListener("resize", handleResize);
-  //   return () => window.removeEventListener("resize", handleResize);
-  // }, []);
+    handleResize(); // Set initial column count
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
-  // useEffect(() => {
-  //   const generateColumns = () => {
-  //     const newColumns: any = [];
-  //     if (data) {
-  //       for (let i = 0; i < columnCount; i++) {
-  //         const numCards = Math.ceil(data?.length / columnCount); // Random number of cards from 1 to 3
-  //         const cards = [];
-  //         // console.log(numCards);
+  useEffect(() => {
+    const generateColumns = () => {
+      const newColumns: any = [];
+      if (data) {
+        let dataLength = data?.length;
+        let j = 0;
+        for (let i = 0; i < columnCount; i++) {
+          const numCards = Math.ceil(dataLength / (columnCount - i)); // Random number of cards from 1 to 3
+          const cards = [];
+          dataLength -= numCards;
+          const till = j + numCards;
+          while (data[j] && j < till) {
+            cards.push(
+              <Card
+                key={`${i}-${j}`}
+                className="max-w-72 items-center border-0 flex flex-col h-fit break-all rounded-2xl"
+              >
+                <Image
+                  src={data[j]?.image?.url || ""}
+                  alt="brand logo"
+                  className="fit-content h-72 w-72 rounded-t-2xl"
+                  width={300}
+                  height={300}
+                />
+                <div className="border w-full border-[#f5f5f5]" />
+                <div className="w-full">
+                  <CardHeader className="flex flex-col p-3">
+                    <div className="flex justify-between">
+                      <div>
+                        <CardTitle>{data[j]?.name}</CardTitle>
+                        <CardDescription>{data[j]?.headline}</CardDescription>
+                      </div>
+                      {session?.user?.email === data[j]?.loggedInEmail && (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className="rounded-full p-2 h-8 w-8"
+                            >
+                              <Image src={dots} alt="more option" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent className="w-32">
+                            <DropdownMenuCheckboxItem
+                              onClick={() => handleOption("edit", data[j])}
+                            >
+                              Edit
+                            </DropdownMenuCheckboxItem>
+                            <DropdownMenuCheckboxItem
+                              onClick={() => handleOption("delete", data[j])}
+                            >
+                              Delete
+                            </DropdownMenuCheckboxItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      )}
+                    </div>
+                    <div>
+                      <CardDescription
+                        className={`mt-3 opacity-80 overflow-auto h-fit max-h-16 text-wrap`}
+                      >
+                        {data[j]?.description?.length > 0
+                          ? data[j]?.description
+                          : "No description"}
+                      </CardDescription>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-3 pt-0">
+                    <p className="tracking-tight mb-2">Connect</p>
+                    <ul className="flex gap-4">
+                      {SOCIALLINKS.map(
+                        (value: { logo: any; social: string }) => {
+                          return (
+                            (data[j]?.socialLinks?.[0]?.[
+                              value.social as keyof SocialLinks
+                            ] ||
+                              (value.social === "gmail" && data[j]?.email)) && (
+                              <li className="border rounded-full p-1.5">
+                                <Link
+                                  href={
+                                    (value.social === "gmail"
+                                      ? `mailto:${data[j]?.email}`
+                                      : data[j]?.socialLinks?.[0]?.[
+                                          value.social as keyof SocialLinks
+                                        ]) || ""
+                                  }
+                                  target="__blank"
+                                >
+                                  <Image
+                                    className="h-5 w-5 table-cell align-middle"
+                                    src={value.logo}
+                                    alt="social link"
+                                  />
+                                </Link>
+                              </li>
+                            )
+                          );
+                        }
+                      )}
+                    </ul>
+                  </CardContent>
+                </div>
+              </Card>
+            );
+            // }
+            j++;
+          }
 
-  //         for (let j = 0; j < numCards; j++) {
-  //           console.log(numCards * i + j);
-  //           cards.push(
-  //             <Card
-  //               key={`${i}-${j}`}
-  //               className="max-w-72 items-center border-0 flex flex-col h-fit break-all rounded-2xl"
-  //             >
-  //               <Image
-  //                 src={data[numCards * i + j]?.image?.url || nextjs}
-  //                 alt="brand logo"
-  //                 className="fit-content h-72 w-72 rounded-t-2xl"
-  //                 width={300}
-  //                 height={300}
-  //               />
-  //               <div className="border w-full border-[#f5f5f5]" />
-  //               <div className="w-full">
-  //                 <CardHeader className="flex flex-col p-3">
-  //                   <div className="flex justify-between">
-  //                     <div>
-  //                       <CardTitle>{data[numCards * i + j]?.name}</CardTitle>
-  //                       <CardDescription>
-  //                         {data[numCards * i + j]?.headline ||
-  //                           data[numCards * i + j]?.role}
-  //                       </CardDescription>
-  //                     </div>
-  //                     {session?.user?.email ===
-  //                       data[numCards * i + j]?.loggedInEmail && (
-  //                       <DropdownMenu>
-  //                         <DropdownMenuTrigger asChild>
-  //                           <Button
-  //                             variant="outline"
-  //                             className="rounded-full p-2 h-8 w-8"
-  //                           >
-  //                             <Image src={dots} alt="more option" />
-  //                           </Button>
-  //                         </DropdownMenuTrigger>
-  //                         <DropdownMenuContent className="w-32">
-  //                           <DropdownMenuCheckboxItem
-  //                             onClick={() =>
-  //                               handleOption("edit", data[numCards * i + j])
-  //                             }
-  //                           >
-  //                             Edit
-  //                           </DropdownMenuCheckboxItem>
-  //                           <DropdownMenuCheckboxItem
-  //                             onClick={() =>
-  //                               handleOption("delete", data[numCards * i + j])
-  //                             }
-  //                           >
-  //                             Delete
-  //                           </DropdownMenuCheckboxItem>
-  //                         </DropdownMenuContent>
-  //                       </DropdownMenu>
-  //                     )}
-  //                   </div>
-  //                   <div>
-  //                     <CardDescription
-  //                       className={`mt-3 opacity-80 overflow-auto h-fit max-h-16 text-wrap`}
-  //                     >
-  //                       {data[numCards * i + j]?.description?.length > 0
-  //                         ? data[numCards * i + j]?.description
-  //                         : "No description"}
-  //                     </CardDescription>
-  //                   </div>
-  //                 </CardHeader>
-  //                 <CardContent className="p-3 pt-0">
-  //                   <p className="tracking-tight mb-2">Connect</p>
-  //                   <ul className="flex gap-4">
-  //                     {SOCIALLINKS.map(
-  //                       (value: { logo: any; social: string }) => {
-  //                         return (
-  //                           (data[numCards * i + j]?.socialLinks?.[0]?.[
-  //                             value.social
-  //                           ] ||
-  //                             (value.social === "gmail" &&
-  //                               data[numCards * i + j]?.email)) && (
-  //                             <li className="border rounded-full p-1.5">
-  //                               <Link
-  //                                 href={
-  //                                   (value.social === "gmail"
-  //                                     ? `mailto:${
-  //                                         data[numCards * i + j]?.email
-  //                                       }`
-  //                                     : data[numCards * i + j]
-  //                                         ?.socialLinks?.[0]?.[value.social]) ||
-  //                                   ""
-  //                                 }
-  //                                 target="__blank"
-  //                               >
-  //                                 <Image
-  //                                   className="h-5 w-5 table-cell align-middle"
-  //                                   src={value.logo}
-  //                                   alt="social link"
-  //                                 />
-  //                               </Link>
-  //                             </li>
-  //                           )
-  //                         );
-  //                       }
-  //                     )}
-  //                   </ul>
-  //                 </CardContent>
-  //               </div>
-  //             </Card>
-  //           );
-  //         }
+          if (!!cards.length) {
+            newColumns.push(
+              <div key={i} className="flex flex-col gap-2">
+                {cards}
+              </div>
+            );
+          }
+        }
+        setColumns(newColumns);
+      }
+    };
 
-  //         newColumns.push(
-  //           <div key={i} className="flex flex-col gap-2">
-  //             {cards}
-  //           </div>
-  //         );
-  //       }
-  //       setColumns(newColumns);
-  //     }
-  //   };
-
-  //   generateColumns();
-  // }, [data, columnCount]);
+    generateColumns();
+  }, [data, columnCount]);
 
   return (
     <div className="bg-[#111812] h-[90%] overflow-auto p-4">
       {data?.length > 0 && (
         <div className="p-4 xs:place-items-center sm:place-items-start xs:grid-cols-1 sm:grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 grid">
-          {/* {status === "fulfilled" && columns} */}
-          {status === "fulfilled" &&
+          {status === "fulfilled" && columns}
+          {/* {status === "fulfilled" &&
             data?.map((explore: Post) => (
               <Card
                 className="max-w-72 items-center border-0 flex flex-col h-fit break-all break-words rounded-2xl flex-grow-0 basis-150"
@@ -332,7 +328,7 @@ const Content = () => {
                   </CardContent>
                 </div>
               </Card>
-            ))}
+            ))} */}
         </div>
       )}
       {data?.length === 0 && (
