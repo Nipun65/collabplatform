@@ -24,8 +24,8 @@ const Login = () => {
           <LoginComp status={status} className="xs:block lg:hidden" />
 
           <div className="text-[#d0c1b3] font-bold tracking-wider absolute xs:bottom-32 md:bottom-24 lg:bottom-32 xs:right-6 lg:right-6 xs:text-xl md:text-3xl lg:text-4xl text-left opacity-90">
-            <p className="">Share Your Idea</p>
-            <p className="xs:ml-16 lg:ml-28">Connect With Real People</p>
+            <p className="xs:text-right sm:text-left">Share Your Idea</p>
+            <p className="xs:ml-0 sm:ml-28">Connect With Real People</p>
           </div>
         </div>
       </div>
