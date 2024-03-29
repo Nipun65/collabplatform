@@ -16,7 +16,7 @@ const Login = () => {
           className="xs:absolute xs:top-3 xs:left-3 xs:h-16 xs:w-16 lg:h-20 lg:w-20"
         />
         <div>
-          <h1 className="text-[#ddd9d9] xs:w-[25%] sm:w-fit md:w-fit absolute xs:left-6 xs:top-32 sm:left-6 font-bold xs:text-4xl md:text-5xl lg:text-7xl">
+          <h1 className="text-[#ddd9d9] xs:w-[25%] sm:w-fit md:w-fit absolute xs:left-6 xs:top-32 lg:top-44 sm:left-6 font-bold xs:text-4xl md:text-5xl lg:text-7xl">
             Collab<span className="xs:visible sm:hidden">.</span> With
             <span className="xs:visible sm:hidden">.</span> Humans
             <span className="xs:visible sm:hidden">.</span>
